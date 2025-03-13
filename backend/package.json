@@ -1,0 +1,23 @@
+{
+  "name": "todo-app-complete",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "local-storage": "^2.0.0",
+    "mongoose": "^8.4.5",
+    "nodemailer": "^6.10.0",
+    "nodemon": "^3.1.9",
+    "zod": "^3.24.2"
+  }
+}

@@ -1,0 +1,1 @@
+module.exports={jwt_pass:"123"} 
