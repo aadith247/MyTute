@@ -7,10 +7,11 @@ const jwt=require("jsonwebtoken")
 
      const headers=req.headers["authorization"];
     const result=jwt.verify(headers,jwt_pass);
+
     if(result)
     {
         req.teacherId=result.id;
-        console.log(result);
+
         next();
     }
     else {
