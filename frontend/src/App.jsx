@@ -8,7 +8,7 @@ import JoinCourse from "./components/join_course_student";
 import CreateCourse from "./components/create_course_teacher";
 import JoinFirst from "./components/joinfirst_student";
 import CreateFirst from "./components/createfirstcourse_teacher";
-
+import { Card } from "./components/courseCard";
 const App = () => {
   return (
     <Router>
@@ -32,6 +32,7 @@ const MainLayout = () => {
         <Route path="/create-course" element={<CreateCourse />} />
         <Route path="/join-first" element={<JoinFirst />} />
         <Route path="/create-first" element={<CreateFirst />} />
+        <Route path="/course-card" element={<Card/>} />
       </Routes>
     </>
   );

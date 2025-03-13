@@ -1,8 +1,9 @@
 import React from "react";
 import fevicon from "../assets/fevicon.jpg";
 import GoogleSvg from "../assets/icons8-google.svg";
-
+import { useNavigate } from "react-router-dom";
 const Login = () => {
+  const navigate = useNavigate();
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center">
       <div className="flex bg-white shadow-lg rounded-lg overflow-hidden w-[900px]">
@@ -50,7 +51,8 @@ const Login = () => {
             />
             Sign in with Google
           </button>
-          <button className="w-full bg-purple-700 text-white p-2 rounded">
+          <button onClick={() => navigate("/signup")} 
+          className="w-full bg-purple-700 text-white p-2 rounded">
             Create a New Account
           </button>
         </div>
