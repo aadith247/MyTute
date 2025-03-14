@@ -9,6 +9,7 @@ import CreateCourse from "./components/create_course_teacher";
 import JoinFirst from "./components/joinfirst_student";
 import CreateFirst from "./components/createfirstcourse_teacher";
 import { CourseCard } from "./components/courseCard";
+import TeacherDashboard from "./components/teacherCoursePage";
 const App = () => {
   return (
     <Router>
@@ -33,6 +34,7 @@ const MainLayout = () => {
         <Route path="/join-first" element={<JoinFirst />} />
         <Route path="/create-first" element={<CreateFirst />} />
         <Route path="/course-card" element={<CourseCard/>} />
+        <Route path="/teacher-dashboard" element={<TeacherDashboard/>} />
       </Routes>
     </>
   );
