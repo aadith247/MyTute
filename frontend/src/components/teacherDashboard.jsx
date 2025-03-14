@@ -68,10 +68,10 @@ const TeacherDashboard = () => {
         {/* Class Header */}
         <div className="bg-purple-700 text-white p-8 rounded-lg shadow-md w-full max-w-4xl flex justify-between items-center ml-4 py-10">
           <div>
-            <h1 className="text-5xl font-bold">DSA</h1>
-            <p className="text-xl">Data Structures with Applications</p>
+            <h1 className="text-5xl font-bold">DSA</h1>{/* aadithya take input of coure name from backend*/}
+            <p className="text-xl">Data Structures with Applications</p> {/* aadithya take input of coure descripton from backend*/}
           </div>
-          <p className="text-lg font-semibold">Ruchira Nitin Selote</p>
+          <p className="text-lg font-semibold">Ruchira Nitin Selote</p> {/* aadithya take input of teacher name from backend*/}
         </div>
 
         {/* Input Section */}
