@@ -3,10 +3,10 @@ const router = express.Router();
 const studentauth = require("../middlewares/studentauth");
 const { Student, Course } = require("../db/index");
 const jwt = require("jsonwebtoken");
-const { jwt_pass } = require("./secret.js");
+require('dotenv').config("../");
 
 const zod = require("zod");
-
+ 
 const nameSchema = zod.string();
 const mailSchema = zod.string().email();
 
@@ -55,7 +55,7 @@ router.post("/signin", async (req, res) => {
         });
     }
 
-    const token = jwt.sign({ id: response._id }, jwt_pass);
+    const token = jwt.sign({ id: response._id }, process.env.jwt_pass);
     res.json({ token });
 });
 
