@@ -8,9 +8,7 @@ import JoinCourse from "./components/join_course_student";
 import CreateCourse from "./components/create_course_teacher";
 import JoinFirst from "./components/joinfirst_student";
 import CreateFirst from "./components/createfirstcourse_teacher";
-import { CourseCard } from "./components/courseCard";
-import TeacherDashboard from "./components/teacherDashboard";
-import StudentDashboard from "./components/teacherDashboard";
+import OtpVerification from "./components/OtpVerification";
 
 const App = () => {
   return (
@@ -22,7 +20,7 @@ const App = () => {
 
 const MainLayout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ["/", "/signup"];
+  const hideHeaderRoutes = ["/", "/signup", "/verify-otp"];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
 
   return (
@@ -31,13 +29,11 @@ const MainLayout = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/verify-otp" element={<OtpVerification />} />
         <Route path="/join-course" element={<JoinCourse />} />
         <Route path="/create-course" element={<CreateCourse />} />
         <Route path="/join-first" element={<JoinFirst />} />
-        <Route path="/create-first" element={<CreateFirst />} />
-        <Route path="/course-card" element={<CourseCard/>} />
-        <Route path="/teacher-dashboard" element={<TeacherDashboard/>} />
-        <Route path="/student-dashboard" element={<StudentDashboard/>} />
+        <Route path="/teacher/dashboard" element={<CreateFirst />} />
       </Routes>
     </>
   );

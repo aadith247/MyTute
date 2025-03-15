@@ -1,7 +1,31 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { api } from "../api/config";
 
 const JoinCourse = () => {
+  const navigate = useNavigate();
   const [courseCode, setCourseCode] = useState("");
+
+  const handleJoinCourse = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(api.enrollCourse, 
+        { courseCode },
+        {
+          headers: {
+            Authorization: token
+          }
+        }
+      );
+
+      toast.success("Successfully joined the course!");
+      navigate("/join-first");
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to join course");
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-purple-50">
@@ -25,6 +49,7 @@ const JoinCourse = () => {
 
         <button
           className="w-full mt-4 bg-purple-700 text-white p-2 rounded-md shadow-md hover:bg-purple-800 transition"
+          onClick={handleJoinCourse}
         >
           Join Course
         </button>

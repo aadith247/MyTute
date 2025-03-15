@@ -148,7 +148,6 @@ router.post("/test", teacherauth, async (req, res) => {
             _id: courseId,
             teacherId: req.teacherId
         });
-
         if (!course) {
             return res.status(404).json({ error: "Course not found" });
         }
