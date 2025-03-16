@@ -7,7 +7,7 @@ const zod = require("zod");
 const nodemailer = require("nodemailer");
 const ls = require("local-storage");
 require('dotenv').config("../");
-const { jwt_pass } = require("./secret");
+
 const jwt = require("jsonwebtoken");
 const nameSchema = zod.string();
 const mailIdSchema = zod.string().email();
@@ -94,7 +94,7 @@ router.post("/signin", async (req, res) => {
         });
     }
 
-    const token = jwt.sign({ id: response._id }, jwt_pass);
+    const token = jwt.sign({ id: response._id }, process.env.jwt_pass);
     res.json({ token });
 });
 
@@ -148,7 +148,6 @@ router.post("/test", teacherauth, async (req, res) => {
             _id: courseId,
             teacherId: req.teacherId
         });
-
         if (!course) {
             return res.status(404).json({ error: "Course not found" });
         }

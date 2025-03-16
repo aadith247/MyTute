@@ -22,12 +22,12 @@ const LiveCalendar = () => {
   );
 };
 
-const StudentDashboard = () => {   //aadithya take input of course name, course description, teacher name, announcements and assignments from backend
+const StudentDashboard = () => {   // aadithya take input of course name, course description, teacher name, announcements and assignments from backend
   const [announcements, setAnnouncements] = useState([
     { text: "Exam on Monday", dateTime: "15/03/2025 10:00 AM" },
     { text: "New course material uploaded", dateTime: "14/03/2025 8:30 AM" },
   ]);
-    {/*I have taken this just for sample */}
+   
   const [assignments, setAssignments] = useState([
     { text: "Assignment 1: Linked Lists", dateTime: "15/03/2025 5:00 PM" },
     { text: "Assignment 2: Binary Trees", dateTime: "14/03/2025 6:00 PM" },

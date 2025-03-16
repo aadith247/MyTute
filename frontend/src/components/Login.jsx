@@ -1,9 +1,52 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import fevicon from "../assets/fevicon.jpg";
 import GoogleSvg from "../assets/icons8-google.svg";
-import { useNavigate } from "react-router-dom";
+import { api } from "../api/config";
+
 const Login = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    role: "",
+    password: ""
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const endpoint = formData.role.toLowerCase() === "teacher" 
+        ? api.teacherSignin 
+        : api.studentSignin;
+
+        console.log(endpoint);
+      
+      const response = await axios.post(endpoint, {
+        emailId:formData.email,
+        password:formData.password
+
+      });
+      
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("role", formData.role.toLowerCase());
+        toast.success("Login successful!");
+        navigate(formData.role.toLowerCase() === "teacher" ? "/teacher/dashboard" : "/join-first");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.msg || "Login failed");
+    }
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen flex items-center justify-center">
       <div className="flex bg-white shadow-lg rounded-lg overflow-hidden w-[900px]">
@@ -14,23 +57,37 @@ const Login = () => {
           </h2>
           <hr className="border-purple-500 mb-4" />
           <h3 className="text-black text-lg font-semibold text-center mb-4">Login to Your Account</h3>
-          <form>
+          <form onSubmit={handleSubmit}>
             <input
               type="email"
+              name="email"
               placeholder="Email ID"
               className="w-full p-2 mb-3 border border-gray-300 rounded"
+              value={formData.email}
+              onChange={handleChange}
             />
-            <input
-              type="text"
-              placeholder="Role"
+            <select
+              name="role"
               className="w-full p-2 mb-3 border border-gray-300 rounded"
-            />
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option value="">Select Role</option>
+              <option value="teacher">Teacher</option>
+              <option value="student">Student</option>
+            </select>
             <input
               type="password"
+              name="password"
               placeholder="Password"
               className="w-full p-2 mb-4 border border-gray-300 rounded"
+              value={formData.password}
+              onChange={handleChange}
             />
-            <button className="w-full bg-purple-700 text-white p-2 rounded">
+            <button 
+              type="submit"
+              className="w-full bg-purple-700 text-white p-2 rounded hover:bg-purple-800"
+            >
               Login
             </button>
           </form>
@@ -51,8 +108,10 @@ const Login = () => {
             />
             Sign in with Google
           </button>
-          <button onClick={() => navigate("/signup")} 
-          className="w-full bg-purple-700 text-white p-2 rounded">
+          <button 
+            onClick={() => navigate("/signup")}
+            className="w-full bg-purple-700 text-white p-2 rounded hover:bg-purple-800"
+          >
             Create a New Account
           </button>
         </div>

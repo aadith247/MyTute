@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
+import OtpVerification from "./components/OtpVerification";
 import Signup from "./components/signup";
 import Login from "./components/Login";
 import Header from "./components/header";
@@ -12,6 +13,7 @@ import { CourseCard } from "./components/courseCard";
 import TeacherDashboard from "./components/teacherDashboard";
 import StudentDashboard from "./components/studentDashboard";
 
+
 const App = () => {
   return (
     <Router>
@@ -22,7 +24,7 @@ const App = () => {
 
 const MainLayout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ["/", "/signup"];
+  const hideHeaderRoutes = ["/", "/signup", "/verify-otp"];
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
 
   return (
@@ -31,6 +33,7 @@ const MainLayout = () => {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/verify-otp" element={<OtpVerification />} />
         <Route path="/join-course" element={<JoinCourse />} />
         <Route path="/create-course" element={<CreateCourse />} />
         <Route path="/join-first" element={<JoinFirst />} />
