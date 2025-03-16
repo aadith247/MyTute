@@ -1,6 +1,8 @@
 import React from "react";
 import fevicon from "../assets/fevicon.jpg";
+import { useNavigate } from "react-router-dom";
 const Header = () => {
+  const navigate = useNavigate();
   return (
     <header className="bg-purple-100 flex items-center justify-between px-6 py-3 shadow-md">
       <div className="flex items-center space-x-3">
@@ -14,7 +16,8 @@ const Header = () => {
           </h1>
         </div>
       </div>
-      <button className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 transition">
+      <button onClick={() => navigate("/join-course")} 
+      className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 transition">
         Join Course
       </button>
     </header>

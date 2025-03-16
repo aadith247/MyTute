@@ -10,7 +10,7 @@ import JoinFirst from "./components/joinfirst_student";
 import CreateFirst from "./components/createfirstcourse_teacher";
 import { CourseCard } from "./components/courseCard";
 import TeacherDashboard from "./components/teacherDashboard";
-import StudentDashboard from "./components/teacherDashboard";
+import StudentDashboard from "./components/studentDashboard";
 
 const App = () => {
   return (
