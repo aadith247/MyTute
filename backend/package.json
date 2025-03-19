@@ -13,7 +13,7 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "local-storage": "^2.0.0",
     "moment-timezone": "^0.5.47",
