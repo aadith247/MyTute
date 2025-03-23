@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { teacherauth } = require("../middlewares/teacherauth");
-const { Teacher, Course } = require("../db/index");
+const { Teacher, Course, Test } = require("../db/index");
 
 const zod = require("zod");
 const nodemailer = require("nodemailer");
@@ -141,26 +141,86 @@ router.post("/course", teacherauth, async (req, res) => {
 });
 
 router.post("/test", teacherauth, async (req, res) => {
-    const { courseId, title, questions } = req.body;
-
     try {
+        const { courseId, title, description, duration, startTime, questions } = req.body;
+   
+
+
+        
+
+
+
+
+
+
+        // Verify the teacher owns this course
         const course = await Course.findOne({
             _id: courseId,
             teacherId: req.teacherId
         });
+
         if (!course) {
-            return res.status(404).json({ error: "Course not found" });
+            return res.status(404).json({ error: "Course not found or unauthorized" });
         }
 
+        // Validate questions format
+        if (!Array.isArray(questions) || questions.length === 0) {
+            return res.status(400).json({ error: "Questions must be provided" });
+        }
+
+        // Create the test
         const test = await Test.create({
             courseId,
             title,
+            description,
+            duration,
+            startTime: new Date(startTime),
             questions
         });
 
-        res.json({ message: "Test created successfully", testId: test._id });
+        res.status(201).json({ 
+            message: "Test created successfully",
+            testId: test._id 
+        });
     } catch (error) {
+        console.error("Error creating test:", error);
         res.status(500).json({ error: "Failed to create test" });
+    }
+});
+
+router.get("/course/:courseId/tests", teacherauth, async (req, res) => {
+    try {
+        const { courseId } = req.params;
+
+        // Verify the teacher owns this course
+        const course = await Course.findOne({
+            _id: courseId,
+            teacherId: req.teacherId
+        });
+
+        if (!course) {
+            return res.status(404).json({ error: "Course not found or unauthorized" });
+        }
+
+        const tests = await Test.find({ courseId });
+        res.json(tests);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch tests" });
+    }
+});
+
+router.get("/courses", teacherauth, async (req, res) => {
+    try {
+        const courses = await Course.find({ teacherId: req.teacherId });
+
+        if (!courses.length) {
+            return res.status(404).json({ message: "No courses found for this teacher" });
+        }
+
+        res.json(courses);
+    } catch (error) {
+        console.error("Error fetching courses:", error);
+        res.status(500).json({ error: "Failed to fetch courses" });
     }
 });
 

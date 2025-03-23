@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const studentauth = require("../middlewares/studentauth");
-const { Student, Course } = require("../db/index");
+const { Student, Course, Test, TestSubmission } = require("../db/index");
 const jwt = require("jsonwebtoken");
 require('dotenv').config("../");
 
@@ -95,6 +95,161 @@ router.get("/courses", studentauth, async (req, res) => {
         res.json(courses);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch courses" });
+    }
+});
+
+// Get available tests for a course
+router.get("/course/:courseId/tests", studentauth, async (req, res) => {
+    try {
+        const { courseId } = req.params;
+
+        // Verify student is enrolled in the course
+        const course = await Course.findOne({
+            _id: courseId,
+            students: req.studentId
+        });
+
+        if (!course) {
+            return res.status(404).json({ error: "Course not found or not enrolled" });
+        }
+
+        // Get tests that have started or are about to start
+        const now = new Date();
+        const tests = await Test.find({
+            courseId,
+            startTime: { $lte: new Date(now.getTime() + 30 * 60000) } // Include tests starting within 30 minutes
+        });
+
+        // Add submission status for each test
+        const testsWithStatus = await Promise.all(tests.map(async (test) => {
+            const submission = await TestSubmission.findOne({
+                testId: test._id,
+                studentId: req.studentId
+            });
+
+            return {
+                ...test.toObject(),
+                submitted: !!submission,
+                score: submission?.score
+            };
+        }));
+
+        res.json(testsWithStatus);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch tests" });
+    }
+});
+
+// Get a specific test
+router.get("/test/:testId", studentauth, async (req, res) => {
+    try {
+        const { testId } = req.params;
+        const test = await Test.findById(testId);
+
+        if (!test) {
+            return res.status(404).json({ error: "Test not found" });
+        }
+
+        // Verify student is enrolled in the course
+        const course = await Course.findOne({
+            _id: test.courseId,
+            students: req.studentId
+        });
+
+        if (!course) {
+            return res.status(403).json({ error: "Not enrolled in this course" });
+        }
+
+        // Check if test has started
+        const now = new Date();
+        if (test.startTime > now) {
+            return res.status(403).json({ error: "Test has not started yet" });
+        }
+
+        // Check if test has expired
+        const testEndTime = new Date(test.startTime.getTime() + test.duration * 60000);
+        if (now > testEndTime) {
+            return res.status(403).json({ error: "Test has expired" });
+        }
+
+        // Check if already submitted
+        const existingSubmission = await TestSubmission.findOne({
+            testId,
+            studentId: req.studentId
+        });
+
+        if (existingSubmission) {
+            return res.status(403).json({ error: "Test already submitted" });
+        }
+
+        // Remove correct answers from response
+        const testData = test.toObject();
+        testData.questions = testData.questions.map(q => ({
+            question: q.question,
+            options: q.options
+        }));
+
+        res.json(testData);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch test" });
+    }
+});
+
+// Submit test answers
+router.post("/test/:testId/submit", studentauth, async (req, res) => {
+    try {
+        const { testId } = req.params;
+        const { answers } = req.body;
+
+        const test = await Test.findById(testId);
+        if (!test) {
+            return res.status(404).json({ error: "Test not found" });
+        }
+
+        // Verify student is enrolled in the course
+        const course = await Course.findOne({
+            _id: test.courseId,
+            students: req.studentId
+        });
+
+        if (!course) {
+            return res.status(403).json({ error: "Not enrolled in this course" });
+        }
+
+        // Check if already submitted
+        const existingSubmission = await TestSubmission.findOne({
+            testId,
+            studentId: req.studentId
+        });
+
+        if (existingSubmission) {
+            return res.status(403).json({ error: "Test already submitted" });
+        }
+
+        // Calculate score
+        let score = 0;
+        answers.forEach((answer, index) => {
+            if (test.questions[index] && answer.selectedAnswer === test.questions[index].correctAnswer) {
+                score++;
+            }
+        });
+
+        // Create submission
+        const submission = await TestSubmission.create({
+            testId,
+            studentId: req.studentId,
+            answers,
+            score,
+            submittedAt: new Date()
+        });
+
+        res.json({
+            message: "Test submitted successfully",
+            score,
+            totalQuestions: test.questions.length
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to submit test" });
     }
 });
 

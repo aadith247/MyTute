@@ -1,4 +1,4 @@
-const {jwt_pass} = require("../routes/secret");
+const  jwt_pass =process.env.jwt_pass
 const jwt = require("jsonwebtoken");
 
 function studentauth(req, res, next) {

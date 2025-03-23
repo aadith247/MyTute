@@ -3,8 +3,9 @@ import axios from "axios";
 import { Copy } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { api } from "../api/config";
-
+import {useNavigate} from 'react-router-dom';
 const CreateCourse = () => {
+  const Navigate=useNavigate();
   const [courseName, setCourseName] = useState("");
   const [courseTitle, setCourseTitle] = useState("");
   const [courseCode, setCourseCode] = useState("");
@@ -13,7 +14,9 @@ const CreateCourse = () => {
   const handleCreateCourse = async () => {
     try {
       setVisible(c=>!c);
+      
       const token = localStorage.getItem("token");
+      console.log(token);
       const response = await axios.post(api.createCourse, 
         {
           courseName,
@@ -23,6 +26,8 @@ const CreateCourse = () => {
           headers: {
             Authorization: token
           }
+
+         
         }
       );
 
@@ -30,9 +35,11 @@ const CreateCourse = () => {
         setCourseCode(response.data.courseCode);
         toast.success("Course created successfully!");
       }
+     
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to create course");
     }
+
   };
 
   const handleCopy = () => {
@@ -75,7 +82,7 @@ const CreateCourse = () => {
           </span>
           <button 
             onClick={handleCopy} 
-            className={`hover:text-purple-900 ${courseCode ? "text-purple-700" : "text-gray-400 cursor-not-allowed"}`} 
+            className={`hover:text-purple-900 cursor-pointer  ${courseCode ? "text-purple-700" : "text-gray-400 "}`} 
             disabled={!courseCode}
           >
             <Copy size={20} />

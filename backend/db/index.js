@@ -39,8 +39,11 @@ const courseSchema = new mongoose.Schema({
 const Course = mongoose.model("Courses", courseSchema);
 
 const testSchema = new mongoose.Schema({
-    courseId: { type: mongoose.Types.ObjectId, ref: "Courses" },
-    title: String,
+    courseId: { type: mongoose.Types.ObjectId, ref: "Courses", required: true },
+    title: { type: String, required: true },
+    description: String,
+    duration: { type: Number, required: true }, // in minutes
+    startTime: { type: Date, required: true },
     questions: [{
         question: String,
         options: {
@@ -49,10 +52,23 @@ const testSchema = new mongoose.Schema({
             "3": String,
             "4": String
         },
-        answer: String
+        correctAnswer: String
     }]
 });
 
 const Test = mongoose.model("Tests", testSchema);
 
-module.exports = { Course, Student, Teacher, Test };
+const testSubmissionSchema = new mongoose.Schema({
+    testId: { type: mongoose.Types.ObjectId, ref: "Tests", required: true },
+    studentId: { type: mongoose.Types.ObjectId, ref: "Students", required: true },
+    answers: [{
+        questionIndex: Number,
+        selectedAnswer: String
+    }],
+    score: { type: Number, default: 0 },
+    submittedAt: { type: Date, default: Date.now }
+});
+
+const TestSubmission = mongoose.model("TestSubmissions", testSubmissionSchema);
+
+module.exports = { Course, Student, Teacher, Test, TestSubmission };

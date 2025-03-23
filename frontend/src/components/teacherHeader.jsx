@@ -16,10 +16,16 @@ const TeacherHeader = () => {
           </h1>
         </div>
       </div>
+      <div className="flex gap-4">
       <button onClick={() => navigate("/create-course")} 
       className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 transition">
         Create Course
       </button>
+      <button onClick={() => navigate("course-card")} 
+      className="bg-purple-700 text-white px-4 py-2 rounded-md hover:bg-purple-800 transition">
+        See your courses
+      </button>
+      </div>
     </header>
   );
 };

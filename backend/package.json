@@ -1,25 +1,18 @@
 {
-  "name": "todo-app-complete",
-  "version": "1.0.0",
-  "main": "main.js",
+  "name": "node-starter",
+  "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "local-storage": "^2.0.0",
-    "moment-timezone": "^0.5.47",
-    "mongoose": "^8.4.5",
+    "mongoose": "^8.12.2",
     "nodemailer": "^6.10.0",
-    "nodemon": "^3.1.9",
     "zod": "^3.24.2"
-  }
+  },
+ "type": "commonjs"
 }

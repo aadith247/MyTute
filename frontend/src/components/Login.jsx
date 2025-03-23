@@ -40,7 +40,7 @@ const Login = () => {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("role", formData.role.toLowerCase());
         toast.success("Login successful!");
-        navigate(formData.role.toLowerCase() === "teacher" ? "/teacher/dashboard" : "/join-first");
+        navigate(formData.role.toLowerCase() === "teacher" ? "/create-first" : "/join-first");
       }
     } catch (error) {
       toast.error(error.response?.data?.msg || "Login failed");

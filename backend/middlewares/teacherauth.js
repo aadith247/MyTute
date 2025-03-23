@@ -1,10 +1,12 @@
+require("dotenv").config();
+const  jwt_pass =process.env.jwt_pass;
+const jwt=require("jsonwebtoken");
 
-const  {jwt_pass} =process.env.jwt_pass
-const jwt=require("jsonwebtoken")
 
 
  function teacherauth(req,res,next){
-
+     console.log("The password is : ");
+     console.log(jwt_pass);
      const headers=req.headers["authorization"];
     const result=jwt.verify(headers,jwt_pass);
 
