@@ -13,7 +13,7 @@ router.post("/google", async (req, res) => {
     const { email, name } = googleRes.data;
 
     // Generate JWT token
-    const userToken = jwt.sign({ email, name }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const userToken = jwt.sign({ email, name }, process.env.jwt_pass, { expiresIn: "1h" });
 
     res.json({ token: userToken, role: "student" });
   } catch (error) {
