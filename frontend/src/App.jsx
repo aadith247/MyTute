@@ -15,7 +15,8 @@ import TeacherDashboard from "./components/teacherDashboard";
 import StudentDashboard from "./components/studentDashboard";
 import CreateForm from "./components/teacherTest";
 import StudentTest from "./components/studentTest";
-
+import Sidebar from "./components/sideBar";
+import ProfilePage from "./components/profile";
 const App = () => {
   return (
     <Router>
@@ -26,7 +27,7 @@ const App = () => {
 
 const MainLayout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ["/", "/signup", "/verify-otp"];
+  const hideHeaderRoutes = ["/", "/signup", "/verify-otp","/profile"];
   const teacherRoutes = ["/create-course", "/teacher-dashboard", "/create-form","/create-first"];
 
   const shouldShowHeader = !hideHeaderRoutes.includes(location.pathname);
@@ -48,6 +49,8 @@ const MainLayout = () => {
         <Route path="/student-dashboard" element={<StudentDashboard />} />
         <Route path="/create-form" element={<CreateForm />} />
         <Route path="/student-test" element={<StudentTest />} />
+        <Route path="/sidebar" element={<Sidebar />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </>
   );
