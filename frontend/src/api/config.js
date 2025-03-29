@@ -39,5 +39,6 @@ export const api = {
   getEnrolledCourses: `${API_BASE_URL}/student/courses`,
   getTest: `${API_BASE_URL}/student/test`,
   submitTest: `${API_BASE_URL}/student/test`,
-  getStudentTests: `${API_BASE_URL}/student/course`
+  getStudentTests: `${API_BASE_URL}/student/course`,
+  updateTest: `${API_BASE_URL}/test/:testId`
 };

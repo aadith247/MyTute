@@ -7,7 +7,7 @@ import {useNavigate} from 'react-router-dom';
 const CreateCourse = () => {
   const Navigate=useNavigate();
   const [courseName, setCourseName] = useState("");
-  const [courseTitle, setCourseTitle] = useState("");
+  const [courseDescription, setCourseDescription] = useState("");
   const [courseCode, setCourseCode] = useState("");
   const [visible,setVisible]=useState(false);
 
@@ -17,17 +17,17 @@ const CreateCourse = () => {
       
       const token = localStorage.getItem("token");
       console.log(token);
+
+      
       const response = await axios.post(api.createCourse, 
         {
           courseName,
-          courseTitle
+          courseDescription
         },
         {
           headers: {
             Authorization: token
           }
-
-         
         }
       );
 
@@ -73,8 +73,8 @@ const CreateCourse = () => {
           type="text"
           placeholder="Course description"
           className="w-full p-2 mt-4 border border-gray-300 rounded bg-white text-gray-500 text-center"
-          value={courseTitle}
-          onChange={(e) => setCourseTitle(e.target.value)}
+          value={courseDescription}
+          onChange={(e) => setCourseDescription(e.target.value)}
         />
         <div className={`flex ${visible==false ? `hidden` : `block`} items-center justify-between bg-white border border-purple-500 rounded p-2 mt-4`}>
           <span className={`font-semibold ${courseCode ? "text-purple-700" : "text-gray-400"}`}>
@@ -90,8 +90,7 @@ const CreateCourse = () => {
         </div>
         <button
           className="w-full mt-4 bg-purple-700 text-white p-2 rounded-md shadow-md hover:bg-purple-800 transition"
-          onClick={handleCreateCourse}
-        >
+          onClick={handleCreateCourse}>
           Create Course
         </button>
       </div>

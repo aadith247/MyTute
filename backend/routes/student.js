@@ -98,12 +98,11 @@ router.get("/courses", studentauth, async (req, res) => {
     }
 });
 
-// Get available tests for a course
+
 router.get("/course/:courseId/tests", studentauth, async (req, res) => {
     try {
         const { courseId } = req.params;
 
-        // Verify student is enrolled in the course
         const course = await Course.findOne({
             _id: courseId,
             students: req.studentId
@@ -113,20 +112,19 @@ router.get("/course/:courseId/tests", studentauth, async (req, res) => {
             return res.status(404).json({ error: "Course not found or not enrolled" });
         }
 
-        // Get tests that have started or are about to start
-        const now = new Date();
+       
+       
         const tests = await Test.find({
             courseId,
-            startTime: { $lte: new Date(now.getTime() + 30 * 60000) } // Include tests starting within 30 minutes
+           
         });
 
-        // Add submission status for each test
+       
         const testsWithStatus = await Promise.all(tests.map(async (test) => {
             const submission = await TestSubmission.findOne({
                 testId: test._id,
                 studentId: req.studentId
             });
-
             return {
                 ...test.toObject(),
                 submitted: !!submission,
@@ -140,7 +138,7 @@ router.get("/course/:courseId/tests", studentauth, async (req, res) => {
     }
 });
 
-// Get a specific test
+
 router.get("/test/:testId", studentauth, async (req, res) => {
     try {
         const { testId } = req.params;
@@ -160,19 +158,17 @@ router.get("/test/:testId", studentauth, async (req, res) => {
             return res.status(403).json({ error: "Not enrolled in this course" });
         }
 
-        // Check if test has started
-        const now = new Date();
+      
+        let now = new Date();
+           now = now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
         if (test.startTime > now) {
             return res.status(403).json({ error: "Test has not started yet" });
         }
 
-        // Check if test has expired
         const testEndTime = new Date(test.startTime.getTime() + test.duration * 60000);
         if (now > testEndTime) {
             return res.status(403).json({ error: "Test has expired" });
         }
-
-        // Check if already submitted
         const existingSubmission = await TestSubmission.findOne({
             testId,
             studentId: req.studentId
@@ -182,7 +178,6 @@ router.get("/test/:testId", studentauth, async (req, res) => {
             return res.status(403).json({ error: "Test already submitted" });
         }
 
-        // Remove correct answers from response
         const testData = test.toObject();
         testData.questions = testData.questions.map(q => ({
             question: q.question,
@@ -195,7 +190,7 @@ router.get("/test/:testId", studentauth, async (req, res) => {
     }
 });
 
-// Submit test answers
+
 router.post("/test/:testId/submit", studentauth, async (req, res) => {
     try {
         const { testId } = req.params;
@@ -205,8 +200,6 @@ router.post("/test/:testId/submit", studentauth, async (req, res) => {
         if (!test) {
             return res.status(404).json({ error: "Test not found" });
         }
-
-        // Verify student is enrolled in the course
         const course = await Course.findOne({
             _id: test.courseId,
             students: req.studentId
@@ -216,7 +209,6 @@ router.post("/test/:testId/submit", studentauth, async (req, res) => {
             return res.status(403).json({ error: "Not enrolled in this course" });
         }
 
-        // Check if already submitted
         const existingSubmission = await TestSubmission.findOne({
             testId,
             studentId: req.studentId
@@ -226,7 +218,7 @@ router.post("/test/:testId/submit", studentauth, async (req, res) => {
             return res.status(403).json({ error: "Test already submitted" });
         }
 
-        // Calculate score
+
         let score = 0;
         answers.forEach((answer, index) => {
             if (test.questions[index] && answer.selectedAnswer === test.questions[index].correctAnswer) {
@@ -234,7 +226,7 @@ router.post("/test/:testId/submit", studentauth, async (req, res) => {
             }
         });
 
-        // Create submission
+
         const submission = await TestSubmission.create({
             testId,
             studentId: req.studentId,
