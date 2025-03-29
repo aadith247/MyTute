@@ -1,33 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { api } from "../api/config";
+import { api ,API_BASE_URL} from "../api/config";
 
 const CreateForm = () => {
+  const { courseId, testTitle } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const courseId = location.state?.courseId;
-  const [title, setTitle] = useState("");
+
+
+
+  const [create,setCreate]=useState(true);
+  const [testId,setTestId]=useState('');
+  const [title, setTitle] = useState(testTitle || ""); // Initialize with testTitle from params
   const [description, setDescription] = useState("");
   const [duration, setDuration] = useState(60);
   const [startTime, setStartTime] = useState("");
   const [numQuestions, setNumQuestions] = useState(1);
   const [questions, setQuestions] = useState([
-    { text: "", options: ["", "", "", ""], correctAnswer: "" }
+    { text: "", options: ["", "", "", ""], correctAnswer: "" },
   ]);
+
+  // Fetch test details if testTitle exists
+  const fetchTestDetails = async () => {
+   
+      const token = localStorage.getItem("token");
+      const response = await axios.get(
+        `${API_BASE_URL}/teacher/course/${courseId}/tests`, 
+        {
+          headers: { Authorization: token }, 
+        }
+      );
+      const tests = response.data;
+
+   
+      const existingTest = tests.find((test) => test.title === testTitle);
+      if (existingTest)
+      {
+        console.log(testTitle);
+        setCreate(false);
+        setTitle(existingTest.title);
+        setDescription(existingTest.description);
+        setTestId(existingTest._id);
+        setDuration(existingTest.duration);
+        setStartTime(existingTest.startTime); 
+        setNumQuestions(existingTest.questions.length);
+        setQuestions(
+          existingTest.questions.map((q) => ({
+            text: q.question,
+            options: [q.options["1"], q.options["2"], q.options["3"], q.options["4"]],
+            correctAnswer: q.correctAnswer,
+          }))
+        );
+        toast.success("Test details loaded from database!");
+      }
+    
+  };
+
+ 
+  useEffect(() => {
+    if (testTitle) {
+      fetchTestDetails();
+    }
+  }, [courseId, testTitle]);
 
   const handleTitleChange = (e) => setTitle(e.target.value);
   const handleDescriptionChange = (e) => setDescription(e.target.value);
   const handleDurationChange = (e) => setDuration(parseInt(e.target.value));
-  
+
   const handleStartTimeChange = (e) => {
     const localDate = new Date(e.target.value);
-    // Add IST offset (+5:30)
-    const istDate = new Date(localDate.getTime() + (5.5 * 60 * 60 * 1000));
-    setStartTime(istDate.toISOString());
+    // const istTime = now.toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+    setStartTime(localDate.toISOString());
   };
-  
+
   const handleNumQuestionsChange = (e) => {
     const count = parseInt(e.target.value, 10);
     setNumQuestions(count);
@@ -57,52 +103,79 @@ const CreateForm = () => {
   };
 
   const handleSubmit = async () => {
-    try {
+
       if (!courseId) {
         toast.error("Course ID is missing");
         return;
       }
 
       const token = localStorage.getItem("token");
-      const formattedQuestions = questions.map(q => ({
+      const formattedQuestions = questions.map((q) => ({
         question: q.text,
         options: {
           "1": q.options[0],
           "2": q.options[1],
           "3": q.options[2],
-          "4": q.options[3]
+          "4": q.options[3],
         },
-        correctAnswer: q.correctAnswer
+        correctAnswer: q.correctAnswer,
       }));
-
-      const response = await axios.post(
-        api.createTest,
-        {
-          courseId,
-          title,
-          description,
-          duration,
-          startTime,
-          questions: formattedQuestions
-        },
-        {
-          headers: { Authorization: token }
-        }
-      );
-
-      if (response.data.testId) {
-        toast.success("Test created successfully!");
-        navigate("/teacher-dashboard");
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Failed to create test");
+if(create==true)
+{
+  const response = await axios.post(
+    api.createTest,
+    {
+      courseId,
+      title,
+      description,
+      duration,
+      startTime,
+      questions: formattedQuestions,
+    },
+    {
+      headers: { Authorization: token },
     }
-  };
+  );
+
+  if (response.data.testId) {
+    toast.success("Test saved successfully!");
+    navigate("/teacher-dashboard/" + courseId);
+  }
+
+}
+else if(create==false) {
+
+  const re=await axios.put(`${API_BASE_URL}/teacher/test/${testId}`,
+    {
+    courseId,
+    title,
+    description,
+     duration ,
+      startTime,
+      questions: formattedQuestions , 
+    },
+    {
+      headers: {Authorization: token},
+    }
+  );
+
+  if(re)
+  {
+    toast.success("Test updated successfully");
+    navigate("/teacher-dashboard/"+courseId);
+  }
+
+}
+};
+
+      
+    
+
 
   const getLocalDateTime = () => {
     if (!startTime) return "";
     const istDate = new Date(startTime);
-    const localDate = new Date(istDate.getTime() - (5.5 * 60 * 60 * 1000));
+    const localDate = new Date(istDate.getTime() - 5.5 * 60 * 60 * 1000);
     return localDate.toISOString().slice(0, 16);
   };
 
@@ -110,10 +183,10 @@ const CreateForm = () => {
     <div className="bg-gray-100 min-h-screen flex items-center justify-center p-6">
       <div className="bg-white shadow-lg rounded-lg p-8 w-full max-w-2xl">
         <h2 className="text-purple-700 text-3xl font-bold mb-4 text-center">
-          Create a New Test
+          {testTitle ? "Edit Test" : "Create a New Test"}
         </h2>
         <hr className="border-purple-500 mb-4" />
-        
+
         <input
           type="text"
           placeholder="Test Title"
@@ -121,7 +194,7 @@ const CreateForm = () => {
           onChange={handleTitleChange}
           className="w-full p-2 mb-3 border border-gray-300 rounded"
         />
-        
+
         <textarea
           placeholder="Test Description"
           value={description}
@@ -144,7 +217,6 @@ const CreateForm = () => {
           <label className="block text-purple-700 font-semibold mb-1">Start Time (IST):</label>
           <input
             type="datetime-local"
-            value={getLocalDateTime()}
             onChange={handleStartTimeChange}
             className="w-full p-2 border border-gray-300 rounded"
           />
@@ -205,11 +277,11 @@ const CreateForm = () => {
           </div>
         ))}
 
-        <button 
+        <button
           onClick={handleSubmit}
           className="w-full bg-purple-700 text-white p-3 rounded hover:bg-purple-800"
         >
-          Create Test
+          {testTitle ? "Update Test" : "Create Test"}
         </button>
       </div>
     </div>

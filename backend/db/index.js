@@ -26,11 +26,10 @@ const Student = mongoose.model("Students", studentSchema);
 
 const courseSchema = new mongoose.Schema({
     courseName: String,
-    courseTitle: String,
+    courseDescription: String,
     courseCode: {
         type: String,
         unique: true,
-        required: true
     },
     teacherId: { type: mongoose.Types.ObjectId, ref: "Teachers" },
     students: [{ type: mongoose.Types.ObjectId, ref: "Students" }]

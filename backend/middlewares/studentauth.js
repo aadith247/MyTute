@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const  jwt_pass =process.env.jwt_pass
 const jwt = require("jsonwebtoken");
 

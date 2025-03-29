@@ -18,7 +18,8 @@ export const CourseCard = () => {
       const token = localStorage.getItem('token');
       const endpoint = role === 'teacher' ? api.getTeacherTests : api.getEnrolledCourses;
       
-      const response = await axios.get(endpoint, {
+      const response = await axios.get(endpoint, 
+        {
         headers: { Authorization: token }
       });
       
@@ -28,9 +29,11 @@ export const CourseCard = () => {
     }
   };
 
-  const handleCourseAction = (courseId) => {
-    if (role === 'teacher') {
-      navigate('/create-form', { state: { courseId } });
+  const handleCourseAction = (courseId) => 
+  {
+    if (role === 'teacher') 
+    {
+      navigate(`/teacher-dashboard/${courseId}`);
     } else {
       navigate(`/student-dashboard/${courseId}`);
     }
@@ -53,7 +56,7 @@ export const CourseCard = () => {
                   onClick={() => handleCourseAction(course._id)}
                   className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
                 >
-                  Create Test
+                  Check the course dashboard
                 </button>
               </>
             ) : (

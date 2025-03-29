@@ -84,7 +84,7 @@ const StudentTest = () => {
       );
 
       toast.success(`Test submitted! Score: ${response.data.score}/${response.data.totalQuestions}`);
-      navigate("/student-dashboard");
+      navigate("/course-card");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to submit test");
     }
@@ -154,3 +154,5 @@ const StudentTest = () => {
 };
 
 export default StudentTest;
+
+

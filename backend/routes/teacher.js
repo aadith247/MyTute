@@ -69,7 +69,6 @@ router.post("/signup", async (req, res) => {
 
 router.post("/verify-otp", async (req, res) => {
     const userOtp = req.body.userOtp;
-
     let Fullname = ls.get("name");
     let emailId = ls.get("email");
     let password = ls.get("pass");
@@ -109,10 +108,12 @@ function generateCourseCode() {
 }
 
 router.post("/course", teacherauth, async (req, res) => {
-    const { courseName, courseTitle } = req.body;
-
+    const { courseName, courseDescription} = req.body;
+    
+   
     try {
-        // Generate a unique course code
+
+
         let courseCode;
         let isUnique = false;
         while (!isUnique) {
@@ -125,7 +126,7 @@ router.post("/course", teacherauth, async (req, res) => {
 
         const course = await Course.create({
             courseName,
-            courseTitle,
+            courseDescription,
             courseCode,
             teacherId: req.teacherId,
             students: []
@@ -143,15 +144,6 @@ router.post("/course", teacherauth, async (req, res) => {
 router.post("/test", teacherauth, async (req, res) => {
     try {
         const { courseId, title, description, duration, startTime, questions } = req.body;
-   
-
-
-        
-
-
-
-
-
 
         // Verify the teacher owns this course
         const course = await Course.findOne({
@@ -174,7 +166,7 @@ router.post("/test", teacherauth, async (req, res) => {
             title,
             description,
             duration,
-            startTime: new Date(startTime),
+            startTime: new Date(startTime).toISOString(),
             questions
         });
 
@@ -186,6 +178,21 @@ router.post("/test", teacherauth, async (req, res) => {
         console.error("Error creating test:", error);
         res.status(500).json({ error: "Failed to create test" });
     }
+});
+
+router.get("/course/:courseId",teacherauth, async (req,res)=>{
+   
+       const courseId= req.params.courseId
+        const course=await Course.findOne({
+            _id:courseId,
+            teacherId:req.teacherId
+        });
+        if(!course)
+        {
+            return res.status(404).json({error : "Course is not created"});
+        }
+        res.json(course);
+
 });
 
 router.get("/course/:courseId/tests", teacherauth, async (req, res) => {
@@ -201,7 +208,6 @@ router.get("/course/:courseId/tests", teacherauth, async (req, res) => {
         if (!course) {
             return res.status(404).json({ error: "Course not found or unauthorized" });
         }
-
         const tests = await Test.find({ courseId });
         res.json(tests);
     } catch (error) {
@@ -223,5 +229,18 @@ router.get("/courses", teacherauth, async (req, res) => {
         res.status(500).json({ error: "Failed to fetch courses" });
     }
 });
+
+
+router.put("/test/:testId", teacherauth, async (req, res) => {
+    const { courseId, title, description, duration, startTime, questions } = req.body;
+    const test = await Test.findByIdAndUpdate 
+    (
+       req.params.testId,
+      { title, description, duration, startTime, questions },
+    
+    );
+    if (!test) return res.status(404).json({ error: "Test not found" });
+    res.json({ message: "Test updated", testId: test._id });
+  });
 
 module.exports = router;

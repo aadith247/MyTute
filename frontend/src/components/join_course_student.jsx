@@ -21,7 +21,7 @@ const JoinCourse = () => {
       );
 
       toast.success("Successfully joined the course!");
-      navigate("/join-first");
+      navigate("/course-card");
     } catch (error) {
       toast.error(error.response?.data?.error || "Failed to join course");
     }

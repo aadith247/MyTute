@@ -5,8 +5,7 @@ const jwt=require("jsonwebtoken");
 
 
  function teacherauth(req,res,next){
-     console.log("The password is : ");
-     console.log(jwt_pass);
+    
      const headers=req.headers["authorization"];
     const result=jwt.verify(headers,jwt_pass);
 
