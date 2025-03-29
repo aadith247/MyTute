@@ -30,7 +30,7 @@ const App = () => {
 
 const MainLayout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ["/", "/signup", "/verify-otp"];
+  const hideHeaderRoutes = ["/", "/signup", "/verify-otp","/profile"];
 
 
 
