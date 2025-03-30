@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, User, Settings, LogOut, Book } from "lucide-react";
 
-const SidebarF = () => {
+ const Sidebar = () => {
   const navigate = useNavigate();
   const [notificationOption, setNotificationOption] = useState("Allow");
   const [showOptions, setShowOptions] = useState(false);
@@ -74,5 +74,4 @@ const DropdownItem = ({ text, setOption, setShowOptions }) => (
     {text}
   </button>
 );
-
-export default SidebarF;
+export default Sidebar

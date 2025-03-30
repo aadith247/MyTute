@@ -15,9 +15,10 @@ import TeacherDashboard from "./components/teacherDashboard";
 import StudentDashboard from "./components/studentDashboard";
 import CreateForm from "./components/teacherTest";
 import StudentTest from "./components/studentTest";
-import Sidebar from "./components/sideBar";
+import Sidebar from "./components/sideBar.jsx";
 import ProfilePage from "./components/profile";
 import {Toaster} from 'react-hot-toast'
+import { Settings } from "./components/settings";
 
 const App = () => {
   return (
@@ -63,6 +64,7 @@ const MainLayout = () => {
         <Route path="/student-test/:courseId/:testId" element={<StudentTest />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/sidebar" element={<Sidebar />} />
+        <Route path="/settings" element={<Settings/>}/>
       </Routes>
     </>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import SidebarF from "./sidebarFixed";
+import Sidebar from "./sideBar";
 
 const ProfilePage = () => {
   const [name, setName] = useState("Priyanshu Raj");
@@ -11,7 +11,7 @@ const ProfilePage = () => {
   return (
     <div className="flex h-screen">
       <div className="fixed left-0 top-0 h-full bg-white shadow-md border-r">
-  <SidebarF />
+  <Sidebar />
 </div>
       <div className="flex-1 flex justify-center items-center ml-[280px] bg-gray-100 shadow-inner overflow-y-auto p-6">
         <div className="w-[550px] bg-white shadow-xl rounded-xl p-6 border">
