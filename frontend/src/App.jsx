@@ -19,7 +19,7 @@ import Sidebar from "./components/sideBar.jsx";
 import ProfilePage from "./components/profile";
 import {Toaster} from 'react-hot-toast'
 import { Settings } from "./components/settings";
-
+import { SidebarF } from "./components/sidebarFixed.jsx";
 const App = () => {
   return (
     <Router>
@@ -65,6 +65,7 @@ const MainLayout = () => {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/sidebar" element={<Sidebar />} />
         <Route path="/settings" element={<Settings/>}/>
+        <Route path="/sidebarF" element={<SidebarF />} />
       </Routes>
     </>
   );
