@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Bell, User, Settings, LogOut, Book } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
 const SidebarF = () => {
+  const navigate = useNavigate();
   const [notificationOption, setNotificationOption] = useState("Allow");
   const [showOptions, setShowOptions] = useState(false);
 
@@ -18,9 +19,9 @@ const SidebarF = () => {
 
       {/* Menu Items */}
       <div className="mt-4 space-y-2 flex-1">
-        <MenuItem icon={<User size={18} />} text="My Profile" />
-        <MenuItem icon={<Book size={18} />} text="My Course" />
-        <MenuItem icon={<Settings size={18} />} text="Settings" />
+        <MenuItem icon={<User size={18} />} text="My Profile" onClick={() => navigate("/profile")} />
+        <MenuItem icon={<Book size={18} />} text="My Course" onClick={() => navigate("/course-card")} />
+        <MenuItem icon={<Settings size={18} />} text="Settings" onClick={() => navigate("/settings")} />
 
         {/* Notification Dropdown */}
         <div className="relative flex items-center justify-between p-2 hover:bg-gray-100 rounded-md cursor-pointer">
@@ -44,14 +45,14 @@ const SidebarF = () => {
       </div>
 
       {/* Log Out */}
-      <MenuItem icon={<LogOut size={18} />} text="Log Out" className="text-red-500 mt-auto" />
+      <MenuItem icon={<LogOut size={18} />} text="Log Out" className="text-red-500 mt-auto" onClick={() => navigate("/logout")} />
     </div>
   );
 };
 
 // Generic Menu Item
-const MenuItem = ({ icon, text, className = "" }) => (
-  <div className={`flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md cursor-pointer ${className}`}>
+const MenuItem = ({ icon, text, onClick, className = "" }) => (
+  <div className={`flex items-center gap-3 p-2 hover:bg-gray-100 rounded-md cursor-pointer ${className}`} onClick={onClick}>
     {icon}
     <span>{text}</span>
   </div>
