@@ -15,7 +15,7 @@ const nameSchema = zod.string();
 const mailSchema = zod.string().email();
 
 
-const ai = new GoogleGenAI({ apiKey: " AIzaSyCIOzoWD59mXqkcyD11xdp0cwBMedCO9SM" });
+const ai = new GoogleGenAI({ apiKey: "gemini-api-key" });
 
 async function generateAnalysis(testData, submissionData) {
   const response = await ai.models.generateContent(
