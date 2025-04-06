@@ -242,5 +242,44 @@ router.put("/test/:testId", teacherauth, async (req, res) => {
     if (!test) return res.status(404).json({ error: "Test not found" });
     res.json({ message: "Test updated", testId: test._id });
   });
-
+  router.get("/profile", teacherauth, async (req, res) => {
+    try {
+      const teacher = await Teacher.findById(req.teacherId);
+      if (!teacher) {
+        return res.status(404).json({ error: "Teacher not found" });
+      }
+      res.json(teacher);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch profile" });
+    }
+  });
+  
+  router.put("/settings", teacherauth, async (req, res) => {
+    try {
+      const { firstName, lastName, currentPassword, newPassword } = req.body;
+      
+      const teacher = await Teacher.findById(req.teacherId);
+      if (!teacher) {
+        return res.status(404).json({ error: "Teacher not found" });
+      }
+  
+      // Verify current password
+      if (currentPassword && currentPassword !== teacher.password) {
+        return res.status(401).json({ error: "Current password is incorrect" });
+      }
+  
+      // Update fields
+      if (firstName || lastName) {
+        teacher.Fullname = `${firstName} ${lastName}`.trim();
+      }
+      if (newPassword) {
+        teacher.password = newPassword;
+      }
+  
+      await teacher.save();
+      res.json({ message: "Settings updated successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update settings" });
+    }
+  });
 module.exports = router;

@@ -8,14 +8,23 @@ require('dotenv').config("../");
 const moment = require('moment-timezone');
 const zod = require("zod");
 
+const nodemailer = require("nodemailer");
+const ls = require("local-storage");
 const PDFDocument = require('pdfkit');
 
  
 const nameSchema = zod.string();
 const mailSchema = zod.string().email();
 
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+});
 
-const ai = new GoogleGenAI({ apiKey: "gemini-api-key" });
+const ai = new GoogleGenAI({ apiKey: " AIzaSyCIOzoWD59mXqkcyD11xdp0cwBMedCO9SM" });
 
 async function generateAnalysis(testData, submissionData) {
   const response = await ai.models.generateContent(
@@ -24,15 +33,21 @@ async function generateAnalysis(testData, submissionData) {
     contents:` Analyze this test performance:
                 Test Title: ${testData.title}
                 Score: ${submissionData.score} out of ${testData.questions.length}
-                Time Taken: ${moment(submissionData.submittedAt).diff(testData.startTime, 'minutes')} minutes
                 Total Questions: ${testData.questions.length} 
     Please provide:
               1. Overall performance assessment
               2. Areas of strength
               3. Areas needing improvement
               4. Recommendations for future improvement
-                
-              Keep the analysis concise but informative.`
+              Keep the analysis concise but informative.
+             and give me question wise analysis of the student from this raw data: 
+              the questions and correct answer are ${testData}
+              and the student attempted : ${submissionData}
+              don't give me any table for question wise analysis..give me a structured text only
+              please keep question wise analysis as short as possible...don't elongate too much
+
+              
+              `
     
   }
   );
@@ -77,6 +92,8 @@ router.post("/signup", async (req, res) => {
     let firstName = req.body.firstName;
     let lastName = req.body.lastName;
     let fullName = firstName + " " + lastName;
+
+
     const nameExc = nameSchema.safeParse(fullName);
     if (!nameExc.success) {
         return res.status(411).json({
@@ -96,18 +113,49 @@ router.post("/signup", async (req, res) => {
             "msg": "The passwords do not match"
         });
     }
-    try {
+ 
         let found = await Student.findOne({ emailId });
         if (found) {
             return res.status(400).send("You are already registered, please sign in");
         }
-        let newstudent = new Student({ fullName, emailId, password });
-        await newstudent.save();
-        res.status(201).json({ msg: "student created successfully" });
-    } catch (err) {
-        res.status(500).send("Server error");
+
+        let otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    await transporter.sendMail({
+        from: '"From Team myTute" <mytute05@gmail.com>',
+        to: emailId,
+        subject: "OTP Verification",
+        text: `Your OTP is: ${otp}`,
+    });
+
+    ls.set("otp", otp);
+    ls.set("email", emailId);
+    ls.set("pass", password);
+    ls.set("name", fullName);
+    res.json({ "msg": "successfully sent the mail" });
+
+    } 
+);
+
+
+router.post("/verify-otp", async (req, res) => {
+    const userOtp = req.body.userOtp;
+    let Fullname = ls.get("name");
+    let emailId = ls.get("email");
+    let password = ls.get("pass");
+
+    if (userOtp == ls.get("otp")) {
+        await Student.create({ Fullname, emailId, password });
+        ls.remove("otp");
+        res.status(201).json({ msg: "Student created successfully" });
+    } else {
+        res.status(411).send({
+            "msg": "OTP is wrong please check again"
+        });
     }
 });
+
+
 
 router.post("/signin", async (req, res) => {
     let { emailId, password } = req.body;
@@ -314,35 +362,25 @@ router.get("/course/:courseId/:testId", studentauth, async (req, res) => {
         const { courseId, testId } = req.params;
         const studentId = req.studentId;
 
-        // Fetch test, course, and submission details
-        const test = await Test.findOne({ _id: testId, courseId: courseId });
-        if (!test) {
-            return res.status(404).json({ message: "Test not found" });
-        }
+        const test = await Test.findOne({ _id: testId, courseId: courseId }).populate('questions');
+        if (!test) return res.status(404).json({ message: "Test not found" });
 
         const course = await Course.findById(courseId);
-        if (!course) {
-            return res.status(404).json({ message: "Course not found" });
-        }
+        if (!course) return res.status(404).json({ message: "Course not found" });
 
-        const submission = await TestSubmission.findOne({ 
-            testId: testId,
-            studentId: studentId
-        });
-        if (!submission) {
-            return res.status(404).json({ message: "No submission found for this test" });
-        }
+        const submission = await TestSubmission.findOne({ testId: testId, studentId: studentId });
+        if (!submission) return res.status(404).json({ message: "No submission found for this test" });
 
         const student = await Student.findById(studentId);
 
-        // Generate AI analysis
         const aiAnalysis = await generateAnalysis(test, submission);
 
-        // Create PDF
-        const doc = new PDFDocument();
+        const PDFDocument = require('pdfkit');
+        const moment = require('moment-timezone');
+
+        const doc = new PDFDocument({ margin: 50 });
         const chunks = [];
 
-        // Collect PDF data chunks
         doc.on('data', chunk => chunks.push(chunk));
         doc.on('end', () => {
             const pdfBuffer = Buffer.concat(chunks);
@@ -358,53 +396,72 @@ router.get("/course/:courseId/:testId", studentauth, async (req, res) => {
             });
         });
 
-        // Add content to PDF
-        doc.fontSize(20).text('Test Performance Report', { align: 'center' });
+        const headingFont = { size: 20 };
+        const subheadingFont = { size: 14 };
+        const bodyFont = { size: 12 };
+        const listItemIndent = 20;
+        const pageWidth = doc.page.width - 2 * doc.options.margin;
+        const BOTTOM_MARGIN = doc.page.height - doc.options.margin;
+        const LINE_HEIGHT_FACTOR = 1.3;
+
+        // Header
+        doc.font("Helvetica-Bold").fontSize(headingFont.size).text('Test Performance Report', { align: 'center' });
         doc.moveDown();
 
-        doc.fontSize(14).text('Student info');
-        doc.fontSize(12)
-           
-           .text(`Email: ${student.emailId}`)
-           .moveDown();
+        // Student Info
+        doc.font("Helvetica-Bold").fontSize(subheadingFont.size).text('Student Information', { underline: true });
+        doc.font("Times-Roman").fontSize(bodyFont.size).text(`Email: ${student.emailId}`).moveDown();
 
-        doc.fontSize(14).text('Course info');
-        doc.fontSize(12)
-           .text(`Course: ${course.courseName}`)
-           .text(`Course Description: ${course.courseTitle}`)
-           .moveDown();
+        // Course Info
+        doc.font("Helvetica-Bold").fontSize(subheadingFont.size).text('Course Information', { underline: true });
+        doc.font("Times-Roman").fontSize(bodyFont.size)
+            .text(`Course: ${course.courseName}`)
+            .text(`Course Description: ${course.courseTitle}`, {
+                width: pageWidth,
+                lineGap: bodyFont.size * (LINE_HEIGHT_FACTOR - 1)
+            })
+            .moveDown();
 
-        doc.fontSize(14).text('Test Information');
-        doc.fontSize(12)
-           .text(`Test Title: ${test.title}`)
-           .text(`Date: ${moment(test.startTime).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mm A')}`)
-           .text(`Duration: ${test.duration} minutes`)
-           .text(`Total Questions: ${test.questions.length}`)
-           .text(`Score: ${submission.score} out of ${test.questions.length}`)
-           .text(`Percentage: ${((submission.score / test.questions.length) * 100).toFixed(2)}%`)
-           .moveDown();
+        // Test Info
+        doc.font("Helvetica-Bold").fontSize(subheadingFont.size).text('Test Details', { underline: true });
+        doc.font("Times-Roman").fontSize(bodyFont.size)
+            .text(`Test Title: ${test.title}`)
+            .text(`Date: ${moment(test.startTime).tz('Asia/Kolkata').format('DD-MM-YYYY hh:mm A')}`)
+            .text(`Duration: ${test.duration} minutes`)
+            .text(`Total Questions: ${test.questions.length}`)
+            .text(`Score: ${submission.score} out of ${test.questions.length}`)
+            .text(`Percentage: ${((submission.score / test.questions.length) * 100).toFixed(2)}%`)
+            .moveDown();
 
-        doc.fontSize(14).text('AI Analysis');
-        doc.fontSize(12).text(aiAnalysis);
-        
-        // Question-wise analysis
-        doc.addPage();
-        doc.fontSize(14).text('Question-wise Analysis');
-        doc.moveDown();
+        // AI Analysis
+        doc.font("Helvetica-Bold").fontSize(subheadingFont.size).text('AI Analysis', { underline: true });
+        doc.moveDown(0.5);
 
-        test.questions.forEach((question, index) => {
-            const userAnswer = submission.answers.find(a => a.questionIndex === index);
-            const isCorrect = userAnswer && userAnswer.selectedOption === question.answer;
+        const analysisLines = aiAnalysis.split('\n');
+        analysisLines.forEach(line => {
+            if (doc.y > BOTTOM_MARGIN) doc.addPage();
 
-            doc.fontSize(12)
-               .text(`Question ${index + 1}: ${question.question}`)
-               .text(`Your Answer: Option ${userAnswer ? userAnswer.selectedOption : 'Not answered'}`)
-               .text(`Correct Answer: Option ${question.answer}`)
-               .text(`Result: ${isCorrect ? '✓ Correct' : '✗ Incorrect'}`)
-               .moveDown();
+            const cleanText = line
+                .replace(/^#+\s*/, '')              // Markdown header cleanup
+                .replace(/^\*\s*/, '')              // Bullet cleanup
+                .replace(/\*\*(.*?)\*\*/g, '$1')    // Bold
+                .replace(/_(.*?)_/g, '$1')          // Italics
+                .trim();
+
+            if (line.startsWith("##")) {
+                doc.font("Helvetica-Bold").fontSize(16).text(cleanText, { lineGap: 4 });
+            } else if (line.startsWith("#")) {
+                doc.font("Helvetica-Bold").fontSize(18).text(cleanText, { lineGap: 6 });
+            } else if (line.startsWith("* ")) {
+                doc.font("Times-Roman").fontSize(12).text("• " + cleanText, { indent: 20 });
+            } else {
+                doc.font("Times-Roman").fontSize(12).text(cleanText);
+            }
+
+            doc.moveDown(LINE_HEIGHT_FACTOR);
         });
 
-        // Finalize PDF
+        doc.addPage();
         doc.end();
 
     } catch (error) {
@@ -415,6 +472,55 @@ router.get("/course/:courseId/:testId", studentauth, async (req, res) => {
         });
     }
 });
+
+
+
+
+
+
+
+// Add these routes to the existing file, before the module.exports line
+
+router.get("/profile", studentauth, async (req, res) => {
+    try {
+      const student = await Student.findById(req.studentId);
+      if (!student) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+      res.json(student);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch profile" });
+    }
+  });
+  
+  router.put("/settings", studentauth, async (req, res) => {
+    try {
+      const { firstName, lastName, currentPassword, newPassword } = req.body;
+      
+      const student = await Student.findById(req.studentId);
+      if (!student) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+  
+      // Verify current password
+      if (currentPassword && currentPassword !== student.password) {
+        return res.status(401).json({ error: "Current password is incorrect" });
+      }
+  
+      // Update fields
+      if (firstName || lastName) {
+        student.Fullname = `${firstName} ${lastName}`.trim();
+      }
+      if (newPassword) {
+        student.password = newPassword;
+      }
+  
+      await student.save();
+      res.json({ message: "Settings updated successfully" });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to update settings" });
+    }
+  });
 
 
 module.exports = router;
