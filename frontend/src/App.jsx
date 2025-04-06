@@ -15,11 +15,9 @@ import TeacherDashboard from "./components/teacherDashboard";
 import StudentDashboard from "./components/studentDashboard";
 import CreateForm from "./components/teacherTest";
 import StudentTest from "./components/studentTest";
-import Sidebar from "./components/sideBar.jsx";
-import ProfilePage from "./components/profile";
 import {Toaster} from 'react-hot-toast'
-import { Settings } from "./components/settings";
-import { SidebarF } from "./components/sidebarFixed.jsx";
+import TestReport from './components/TestReport.jsx'
+
 const App = () => {
   return (
     <Router>
@@ -31,7 +29,7 @@ const App = () => {
 
 const MainLayout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ["/", "/signup", "/verify-otp","/profile","/settings"];
+  const hideHeaderRoutes = ["/", "/signup", "/verify-otp"];
 
 
 
@@ -62,10 +60,7 @@ const MainLayout = () => {
         <Route path="/student-dashboard/:courseId" element={<StudentDashboard />} />
         <Route path="/course/:courseId/create-form/:testTitle" element={<CreateForm />} />
         <Route path="/student-test/:courseId/:testId" element={<StudentTest />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/sidebar" element={<Sidebar />} />
-        <Route path="/settings" element={<Settings/>}/>
-        <Route path="/sidebarF" element={<SidebarF />} />
+        <Route path="/test-report/:courseId/:testId" element={<TestReport/>}/>
       </Routes>
     </>
   );
