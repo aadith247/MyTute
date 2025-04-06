@@ -46,12 +46,26 @@ const StudentDashboard = () => {
         }
       });
 
+
       if(response)
       {
         setTests(response.data);
       }
     } catch (error) {
       toast.error("Failed to fetch tests");
+    }
+  };
+ 
+  const generateReport = async (test) => {
+    try {
+      const testId = test._id;
+      // toast.loading("Generating report...");
+      // Navigate to the TestReport component
+      
+      navigate(`/test-report/${courseId}/${testId}`);
+    } catch (error) {
+      toast.error("Failed to generate report");
+      console.error("Report generation error:", error);
     }
   };
 
@@ -81,10 +95,10 @@ const StudentDashboard = () => {
           
           <div>
             <h1 className="text-5xl pl-4  font-bold">DSA</h1>
-            <p className="text-xl pl-4 mt-2">Daat</p> 
+            <p className="text-xl pl-4 mt-2">Data structures and algorithms</p> 
           </div>
           <div>
-          <p className="text-xl">Factuly name</p> 
+          <p className="text-xl">Faculty name</p> 
           </div>
       
      
@@ -130,8 +144,14 @@ const StudentDashboard = () => {
                       Take Test
                     </button>
                   ) : (
-                    <div className="text-green-600 font-semibold">
+
+
+                    <div>
+                    <div className="text-green-600 mb-2 font-semibold">
                       Completed - Score: {test.score}/{test.questions.length}
+        
+                    </div>
+                    <button onClick={()=>{generateReport(test)}}  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700">Generate a report</button>
                     </div>
                   )}
                 </div>
