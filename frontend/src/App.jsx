@@ -14,6 +14,8 @@ import { CourseCard } from "./components/courseCard";
 import TeacherDashboard from "./components/teacherDashboard";
 import StudentDashboard from "./components/studentDashboard";
 import CreateForm from "./components/teacherTest";
+import { Settings } from "./components/settings";
+ import { SidebarF } from "./components/sidebarFixed.jsx";
 import StudentTest from "./components/studentTest";
 import {Toaster} from 'react-hot-toast'
 import TestReport from './components/TestReport.jsx'
@@ -29,7 +31,7 @@ const App = () => {
 
 const MainLayout = () => {
   const location = useLocation();
-  const hideHeaderRoutes = ["/", "/signup", "/verify-otp"];
+  const hideHeaderRoutes = ["/", "/signup", "/verify-otp","/profile","/settings"];
 
 
 
@@ -61,6 +63,10 @@ const MainLayout = () => {
         <Route path="/course/:courseId/create-form/:testTitle" element={<CreateForm />} />
         <Route path="/student-test/:courseId/:testId" element={<StudentTest />} />
         <Route path="/test-report/:courseId/:testId" element={<TestReport/>}/>
+        <Route path="/profile" element={<ProfilePage />} />
+         <Route path="/sidebar" element={<Sidebar />} />
+         <Route path="/settings" element={<Settings/>}/>
+         <Route path="/sidebarF" element={<SidebarF />} />
       </Routes>
     </>
   );
