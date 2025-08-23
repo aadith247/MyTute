@@ -132,14 +132,7 @@ const Signup = () => {
             alt="Educational Bird"
             className="w-48 h-48 mb-4"
           />
-          <button className="w-full bg-white text-black border border-gray-300 p-2 rounded mb-4 flex items-center justify-center">
-            <img
-              src={GoogleSvg}
-              alt="Google Icon"
-              className="w-6 h-6 mr-2"
-            />
-            Sign in with Google
-          </button>
+  
           <button 
             onClick={() => navigate("/")}
             className="w-full bg-purple-700 text-white p-2 rounded hover:bg-purple-800"
