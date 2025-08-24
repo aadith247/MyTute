@@ -93,9 +93,7 @@ npm start
 
 ## Screenshots
 <div align="center">
-  <img src="https://via.placeholder.com/300x200.png?text=Screenshot+1" alt="Screenshot 1" width="300" />
-  <img src="https://via.placeholder.com/300x200.png?text=Screenshot+2" alt="Screenshot 2" width="300" />
-  <img src="https://via.placeholder.com/300x200.png?text=Screenshot+3" alt="Screenshot 3" width="300" />
+
 </div>
 
 ---
