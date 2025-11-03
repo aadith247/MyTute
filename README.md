@@ -1,6 +1,15 @@
 # MyTute
 
 <h1 align="center">MyTute</h1>
+Demo video :
+https://youtu.be/IOvvsO15LUs?si=Gcqf8Cqlz5WHKT2D
+
+## Screenshots
+<div align="cen<img width="2840" height="1622" alt="image-2" src="https://github.com/user-attachments/assets/8e8acba1-4998-4752-93f6-0c3aef805d91" /><img width="2856" height="1604" alt="image-3" src="https://github.com/user-attachments/assets/64996cb6-d387-46ef-81b1-406c8b8becad" /><img width="1078" height="1202" alt="image-4" src="https://github.com/user-attachments/assets/ca60ae75-8407-4c8f-ab90-ccadf0c0561a" />
+<img width="2860" height="1580" alt="image-5" src="https://github.com/user-attachments/assets/d9ed041a-aaf6-430c-880a-f43f60ed7e27" />
+<img width="2834" height="1638" alt="image-6" src="https://github.com/user-attachments/assets/f8afd344-5fa5-4d55-947b-f181b6421af5" />
+<img width="2878" height="1218" alt="image-7" src="https://github.com/user-attachments/assets/d090cce8-d15a-4be7-9481-f84b09f49e39" />
+<img width="2862" height="1526" alt="image" src="https://github.com/user-attachments/assets/c516e2e4-bba7-43d8-9885-4ecb2525bbbe" />
 
 <div align="center">
   <a>
@@ -24,8 +33,7 @@
 </p>
 
 ---
-Demo video :
-https://youtu.be/IOvvsO15LUs?si=Gcqf8Cqlz5WHKT2D
+
 
 ## Table of Contents
 - [Description](#description)
@@ -91,12 +99,7 @@ npm start
 
 ---
 
-## Screenshots
-<div align="cen<img width="2840" height="1622" alt="image-2" src="https://github.com/user-attachments/assets/8e8acba1-4998-4752-93f6-0c3aef805d91" /><img width="2856" height="1604" alt="image-3" src="https://github.com/user-attachments/assets/64996cb6-d387-46ef-81b1-406c8b8becad" /><img width="1078" height="1202" alt="image-4" src="https://github.com/user-attachments/assets/ca60ae75-8407-4c8f-ab90-ccadf0c0561a" />
-<img width="2860" height="1580" alt="image-5" src="https://github.com/user-attachments/assets/d9ed041a-aaf6-430c-880a-f43f60ed7e27" />
-<img width="2834" height="1638" alt="image-6" src="https://github.com/user-attachments/assets/f8afd344-5fa5-4d55-947b-f181b6421af5" />
-<img width="2878" height="1218" alt="image-7" src="https://github.com/user-attachments/assets/d090cce8-d15a-4be7-9481-f84b09f49e39" />
-<img width="2862" height="1526" alt="image" src="https://github.com/user-attachments/assets/c516e2e4-bba7-43d8-9885-4ecb2525bbbe" />
+
 
 
 ter">
